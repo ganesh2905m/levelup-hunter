@@ -1,42 +1,72 @@
 name: Build LevelUp Hunter APK
 on:
   workflow_dispatch:
+
 permissions:
   contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
-      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.9'
-      - uses: android-actions/setup-android@v3
-      - name: Install Android SDK
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools'
+
+      - name: Install Android SDK packages
         run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
-      - name: Generate Android project
+
+      - name: Create Android project around the web prototype
         run: |
           mkdir -p app/src/main/assets app/src/main/java/com/leveluphunter/app
           test -f index.html
           cp index.html app/src/main/assets/index.html
+
           cat > settings.gradle <<'EOF'
-          pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }
+          pluginManagement {
+              repositories {
+                  google()
+                  mavenCentral()
+                  gradlePluginPortal()
+              }
+          }
           dependencyResolutionManagement {
               repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-              repositories { google(); mavenCentral() }
+              repositories {
+                  google()
+                  mavenCentral()
+              }
           }
           rootProject.name = "LevelUpHunter"
           include(":app")
           EOF
+
           cat > build.gradle <<'EOF'
-          plugins { id 'com.android.application' version '8.7.3' apply false }
+          plugins {
+              id 'com.android.application' version '8.7.3' apply false
+          }
           EOF
+
           cat > app/build.gradle <<'EOF'
-          plugins { id 'com.android.application' }
+          plugins {
+              id 'com.android.application'
+          }
+
           android {
               namespace 'com.leveluphunter.app'
               compileSdk 35
@@ -49,50 +79,18 @@ jobs:
               }
           }
           EOF
+
           cat > app/src/main/AndroidManifest.xml <<'EOF'
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-              <application android:allowBackup="true" android:label="LevelUp Hunter"
+              <application
+                  android:allowBackup="true"
+                  android:label="LevelUp Hunter"
                   android:theme="@android:style/Theme.Material.NoActionBar">
-                  <activity android:name=".MainActivity" android:exported="true">
+                  <activity
+                      android:name=".MainActivity"
+                      android:exported="true">
                       <intent-filter>
                           <action android:name="android.intent.action.MAIN" />
                           <category android:name="android.intent.category.LAUNCHER" />
                       </intent-filter>
                   </activity>
-              </application>
-          </manifest>
-          EOF
-          cat > app/src/main/java/com/leveluphunter/app/MainActivity.java <<'EOF'
-          package com.leveluphunter.app;
-          import android.app.Activity;
-          import android.os.Bundle;
-          import android.webkit.WebSettings;
-          import android.webkit.WebView;
-          import android.webkit.WebViewClient;
-          public class MainActivity extends Activity {
-              private WebView webView;
-              @Override public void onCreate(Bundle state) {
-                  super.onCreate(state);
-                  webView = new WebView(this);
-                  WebSettings settings = webView.getSettings();
-                  settings.setJavaScriptEnabled(true);
-                  settings.setDomStorageEnabled(true);
-                  webView.setWebViewClient(new WebViewClient());
-                  setContentView(webView);
-                  webView.loadUrl("file:///android_asset/index.html");
-              }
-              @Override public void onBackPressed() {
-                  if (webView != null && webView.canGoBack()) webView.goBack();
-                  else super.onBackPressed();
-              }
-          }
-          EOF
-      - name: Build debug APK
-        run: gradle --no-daemon assembleDebug
-      - uses: actions/upload-artifact@v4
-        with:
-          name: LevelUp-Hunter-debug-apk
-          path: app/build/outputs/apk/debug/app-debug.apk
-          if-no-files-found: error
-          retention-days: 14
-          
