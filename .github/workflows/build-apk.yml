@@ -31,66 +31,30 @@ jobs:
       - name: Install Android SDK packages
         run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
 
-      - name: Create Android project around the web prototype
+      - name: Create Android project files
+        shell: bash
         run: |
+          set -euo pipefail
           mkdir -p app/src/main/assets app/src/main/java/com/leveluphunter/app
           test -f index.html
           cp index.html app/src/main/assets/index.html
+          echo cGx1Z2luTWFuYWdlbWVudCB7CiAgICByZXBvc2l0b3JpZXMgeyBnb29nbGUoKTsgbWF2ZW5DZW50cmFsKCk7IGdyYWRsZVBsdWdpblBvcnRhbCgpIH0KfQpkZXBlbmRlbmN5UmVzb2x1dGlvbk1hbmFnZW1lbnQgewogICAgcmVwb3NpdG9yaWVzTW9kZS5zZXQoUmVwb3NpdG9yaWVzTW9kZS5GQUlMX09OX1BST0pFQ1RfUkVQT1MpCiAgICByZXBvc2l0b3JpZXMgeyBnb29nbGUoKTsgbWF2ZW5DZW50cmFsKCkgfQp9CnJvb3RQcm9qZWN0Lm5hbWUgPSAiTGV2ZWxVcEh1bnRlciIKaW5jbHVkZSgiOmFwcCIpCg== | base64 -d > settings.gradle
+          echo cGx1Z2lucyB7CiAgICBpZCAnY29tLmFuZHJvaWQuYXBwbGljYXRpb24nIHZlcnNpb24gJzguNy4zJyBhcHBseSBmYWxzZQp9Cg== | base64 -d > build.gradle
+          echo cGx1Z2lucyB7CiAgICBpZCAnY29tLmFuZHJvaWQuYXBwbGljYXRpb24nCn0KCmFuZHJvaWQgewogICAgbmFtZXNwYWNlICdjb20ubGV2ZWx1cGh1bnRlci5hcHAnCiAgICBjb21waWxlU2RrIDM1CiAgICBkZWZhdWx0Q29uZmlnIHsKICAgICAgICBhcHBsaWNhdGlvbklkICdjb20ubGV2ZWx1cGh1bnRlci5hcHAnCiAgICAgICAgbWluU2RrIDIzCiAgICAgICAgdGFyZ2V0U2RrIDM1CiAgICAgICAgdmVyc2lvbkNvZGUgMQogICAgICAgIHZlcnNpb25OYW1lICcwLjEuMCcKICAgIH0KfQo= | base64 -d > app/build.gradle
+          echo PG1hbmlmZXN0IHhtbG5zOmFuZHJvaWQ9Imh0dHA6Ly9zY2hlbWFzLmFuZHJvaWQuY29tL2Fway9yZXMvYW5kcm9pZCI+CiAgICA8YXBwbGljYXRpb24KICAgICAgICBhbmRyb2lkOmFsbG93QmFja3VwPSJ0cnVlIgogICAgICAgIGFuZHJvaWQ6bGFiZWw9IkxldmVsVXAgSHVudGVyIgogICAgICAgIGFuZHJvaWQ6dGhlbWU9IkBhbmRyb2lkOnN0eWxlL1RoZW1lLk1hdGVyaWFsLk5vQWN0aW9uQmFyIj4KICAgICAgICA8YWN0aXZpdHkgYW5kcm9pZDpuYW1lPSIuTWFpbkFjdGl2aXR5IiBhbmRyb2lkOmV4cG9ydGVkPSJ0cnVlIj4KICAgICAgICAgICAgPGludGVudC1maWx0ZXI+CiAgICAgICAgICAgICAgICA8YWN0aW9uIGFuZHJvaWQ6bmFtZT0iYW5kcm9pZC5pbnRlbnQuYWN0aW9uLk1BSU4iIC8+CiAgICAgICAgICAgICAgICA8Y2F0ZWdvcnkgYW5kcm9pZDpuYW1lPSJhbmRyb2lkLmludGVudC5jYXRlZ29yeS5MQVVOQ0hFUiIgLz4KICAgICAgICAgICAgPC9pbnRlbnQtZmlsdGVyPgogICAgICAgIDwvYWN0aXZpdHk+CiAgICA8L2FwcGxpY2F0aW9uPgo8L21hbmlmZXN0Pgo= | base64 -d > app/src/main/AndroidManifest.xml
+          echo cGFja2FnZSBjb20ubGV2ZWx1cGh1bnRlci5hcHA7CgppbXBvcnQgYW5kcm9pZC5hcHAuQWN0aXZpdHk7CmltcG9ydCBhbmRyb2lkLm9zLkJ1bmRsZTsKaW1wb3J0IGFuZHJvaWQud2Via2l0LldlYlNldHRpbmdzOwppbXBvcnQgYW5kcm9pZC53ZWJraXQuV2ViVmlldzsKaW1wb3J0IGFuZHJvaWQud2Via2l0LldlYlZpZXdDbGllbnQ7CgpwdWJsaWMgY2xhc3MgTWFpbkFjdGl2aXR5IGV4dGVuZHMgQWN0aXZpdHkgewogICAgcHJpdmF0ZSBXZWJWaWV3IHdlYlZpZXc7CiAgICBAT3ZlcnJpZGUgcHVibGljIHZvaWQgb25DcmVhdGUoQnVuZGxlIHN0YXRlKSB7CiAgICAgICAgc3VwZXIub25DcmVhdGUoc3RhdGUpOwogICAgICAgIHdlYlZpZXcgPSBuZXcgV2ViVmlldyh0aGlzKTsKICAgICAgICBXZWJTZXR0aW5ncyBzZXR0aW5ncyA9IHdlYlZpZXcuZ2V0U2V0dGluZ3MoKTsKICAgICAgICBzZXR0aW5ncy5zZXRKYXZhU2NyaXB0RW5hYmxlZCh0cnVlKTsKICAgICAgICBzZXR0aW5ncy5zZXREb21TdG9yYWdlRW5hYmxlZCh0cnVlKTsKICAgICAgICB3ZWJWaWV3LnNldFdlYlZpZXdDbGllbnQobmV3IFdlYlZpZXdDbGllbnQoKSk7CiAgICAgICAgc2V0Q29udGVudFZpZXcod2ViVmlldyk7CiAgICAgICAgd2ViVmlldy5sb2FkVXJsKCJmaWxlOi8vL2FuZHJvaWRfYXNzZXQvaW5kZXguaHRtbCIpOwogICAgfQogICAgQE92ZXJyaWRlIHB1YmxpYyB2b2lkIG9uQmFja1ByZXNzZWQoKSB7CiAgICAgICAgaWYgKHdlYlZpZXcgIT0gbnVsbCAmJiB3ZWJWaWV3LmNhbkdvQmFjaygpKSB3ZWJWaWV3LmdvQmFjaygpOwogICAgICAgIGVsc2Ugc3VwZXIub25CYWNrUHJlc3NlZCgpOwogICAgfQp9Cg== | base64 -d > app/src/main/java/com/leveluphunter/app/MainActivity.java
 
-          cat > settings.gradle <<'EOF'
-          pluginManagement {
-              repositories {
-                  google()
-                  mavenCentral()
-                  gradlePluginPortal()
-              }
-          }
-          dependencyResolutionManagement {
-              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
-              repositories {
-                  google()
-                  mavenCentral()
-              }
-          }
-          rootProject.name = "LevelUpHunter"
-          include(":app")
-          EOF
+      - name: Build debug APK
+        run: gradle --no-daemon assembleDebug
 
-          cat > build.gradle <<'EOF'
-          plugins {
-              id 'com.android.application' version '8.7.3' apply false
-          }
-          EOF
+      - name: Verify APK exists
+        run: test -s app/build/outputs/apk/debug/app-debug.apk
 
-          cat > app/build.gradle <<'EOF'
-          plugins {
-              id 'com.android.application'
-          }
-
-          android {
-              namespace 'com.leveluphunter.app'
-              compileSdk 35
-              defaultConfig {
-                  applicationId 'com.leveluphunter.app'
-                  minSdk 23
-                  targetSdk 35
-                  versionCode 1
-                  versionName '0.1.0'
-              }
-          }
-          EOF
-
-          cat > app/src/main/AndroidManifest.xml <<'EOF'
-          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-              <application
-                  android:allowBackup="true"
-                  android:label="LevelUp Hunter"
-                  android:theme="@android:style/Theme.Material.NoActionBar">
-                  <activity
-                      android:name=".MainActivity"
-                      android:exported="true">
-                      <intent-filter>
-                          <action android:name="android.intent.action.MAIN" />
-                          <category android:name="android.intent.category.LAUNCHER" />
-                      </intent-filter>
-                  </activity>
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LevelUp-Hunter-debug-apk
+          path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 14
+          
